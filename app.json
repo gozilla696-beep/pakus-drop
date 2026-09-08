@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Pakus Drop",
+    "slug": "pakus-drop",
+    "version": "0.10.0",
+    "orientation": "portrait",
+    "scheme": "pakusdrop",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.pakus.drop",
+      "buildNumber": "10",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIRequiresFullScreen": true
+      }
+    },
+    "android": {
+      "package": "com.pakus.drop",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#080817"
+      },
+      "versionCode": 10
+    },
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#080817"
+    },
+    "userInterfaceStyle": "dark"
+  }
+}
