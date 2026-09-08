@@ -2,6 +2,15 @@ name: Pakus Drop iOS Build
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'App.tsx'
+      - 'package.json'
+      - 'scripts/**'
+      - 'app.json'
+      - 'eas.json'
+      - '.github/workflows/ios-build.yml'
 
 jobs:
   build:
