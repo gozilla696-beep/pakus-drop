@@ -28,6 +28,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#080817"
     },
-    "userInterfaceStyle": "dark"
+    "userInterfaceStyle": "dark",
+    "extra": {
+      "eas": {
+        "projectId": "cd8a356e-feb1-45e0-9ae5-ac5b4bf2eb0b"
+      }
+    }
   }
 }
