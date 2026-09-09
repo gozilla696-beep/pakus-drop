@@ -2,15 +2,35 @@ const fs = require('fs');
 const path = require('path');
 
 const appPath = path.join(__dirname, '..', 'App.tsx');
-const source = fs.readFileSync(appPath, 'utf8');
-const oldLine = '<ScrollView contentContainerStyle={styles.page} scrollEnabled={shopOpen}>';
-const newLine = '<ScrollView contentContainerStyle={styles.page} scrollEnabled>';
+let source = fs.readFileSync(appPath, 'utf8');
 
-if (source.includes(oldLine)) {
-  fs.writeFileSync(appPath, source.replace(oldLine, newLine), 'utf8');
-  console.log('Pakus Drop: game screen scrolling enabled.');
-} else if (source.includes(newLine)) {
-  console.log('Pakus Drop: game screen scrolling already enabled.');
-} else {
+const oldScroll = '<ScrollView contentContainerStyle={styles.page} scrollEnabled={shopOpen}>';
+const enabledScroll = '<ScrollView contentContainerStyle={styles.page} scrollEnabled>';
+if (source.includes(oldScroll)) {
+  source = source.replace(oldScroll, enabledScroll);
+}
+
+const oldDimensions = 'const { width } = useWindowDimensions();';
+const newDimensions = 'const { width, height } = useWindowDimensions();';
+if (source.includes(oldDimensions)) {
+  source = source.replace(oldDimensions, newDimensions);
+}
+
+const oldCell = 'const cell = Math.max(17, Math.min(31, Math.floor((width - 56) / COLS)));';
+const newCell = 'const cell = Math.max(17, Math.min(31, Math.floor((width - 56) / COLS), Math.floor((height - 460) / ROWS)));';
+if (source.includes(oldCell)) {
+  source = source.replace(oldCell, newCell);
+}
+
+if (!source.includes(enabledScroll)) {
   throw new Error('Pakus Drop scroll target not found in App.tsx');
 }
+if (!source.includes(newDimensions)) {
+  throw new Error('Pakus Drop responsive height target not found in App.tsx');
+}
+if (!source.includes(newCell)) {
+  throw new Error('Pakus Drop responsive cell target not found in App.tsx');
+}
+
+fs.writeFileSync(appPath, source, 'utf8');
+console.log('Pakus Drop: scrolling enabled and board fitted to iPhone height.');
