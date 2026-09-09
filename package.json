@@ -2,9 +2,8 @@
   "name": "pakus-drop",
   "version": "0.10.0",
   "private": true,
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
-    "postinstall": "node scripts/fix-game-scroll.js",
     "start": "expo start",
     "ios": "expo run:ios",
     "android": "expo run:android",
