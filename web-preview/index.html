@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<title>Pakus Drop Web Test</title>
+<style>
+:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}body{margin:0;background:#080817;color:#fff;min-height:100svh;display:flex;justify-content:center}.app{width:min(100%,460px);padding:18px 16px 24px}.head{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}.title{font-weight:900;font-size:28px;letter-spacing:.5px}.tag{font-size:12px;color:#9da0c7}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.card{background:#15152b;border:1px solid #2a2a52;border-radius:14px;padding:9px;text-align:center}.label{font-size:11px;color:#9da0c7}.value{font-size:18px;font-weight:800}.boardWrap{background:#101026;border:1px solid #2e2e57;border-radius:18px;padding:10px;box-shadow:0 18px 60px #0008}.board{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;aspect-ratio:10/18;background:#05050d;border-radius:10px;overflow:hidden;padding:2px}.cell{background:#111126;border-radius:3px}.filled{background:linear-gradient(135deg,#7c5cff,#2ae8ff)}.active{background:linear-gradient(135deg,#ff4fd8,#ffd84f);box-shadow:0 0 10px #ff4fd888}.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.btn{border:1px solid #363663;background:#191933;color:#fff;border-radius:14px;padding:14px 8px;font-size:22px;font-weight:800;touch-action:manipulation}.btn:active{transform:scale(.97);background:#25254b}.wide{grid-column:span 2;font-size:15px}.status{margin-top:12px;padding:10px 12px;border-radius:12px;background:#10221a;border:1px solid #1f5f3e;color:#b6ffd2;font-size:13px}.help{font-size:12px;color:#9699bd;line-height:1.45;margin-top:10px}.gameover{background:#34151f;border-color:#8f304d;color:#ffd0dc}.pulse{animation:pulse .35s ease}@keyframes pulse{50%{transform:scale(.97)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head"><div><div class="title">PAKUS DROP</div><div class="tag">Browser-Test · kein TestFlight nötig</div></div><div class="tag" id="runtime">START OK</div></div>
+  <div class="stats"><div class="card"><div class="label">SCORE</div><div class="value" id="score">0</div></div><div class="card"><div class="label">LEVEL</div><div class="value" id="level">1</div></div><div class="card"><div class="label">LINES</div><div class="value" id="lines">0</div></div></div>
+  <div class="boardWrap"><div id="board" class="board"></div></div>
+  <div class="controls">
+    <button class="btn" id="left">◀︎</button><button class="btn" id="rotate">↻</button><button class="btn" id="right">▶︎</button><button class="btn" id="down">▼</button>
+    <button class="btn wide" id="drop">DROP</button><button class="btn wide" id="restart">NEUSTART</button>
+  </div>
+  <div class="status" id="status">✅ Web-Runtime läuft. Damit können wir Gameplay und Bedienung auf dem iPhone testen, ohne einen iOS-Build zu verbrauchen.</div>
+  <div class="help">Steuerung: links/rechts, drehen, schneller fallen oder DROP. Diese Version ist absichtlich unabhängig von Expo/React Native und dient uns als sofortige Teststrecke.</div>
+</div>
+<script>
+const COLS=10, ROWS=18;
+const SHAPES=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0],[1,0],[1,1]],[[0,1],[0,1],[1,1]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];
+let grid,piece,score,lines,level,timer,over=false;
+const board=document.getElementById('board');
+const scoreEl=document.getElementById('score'),linesEl=document.getElementById('lines'),levelEl=document.getElementById('level'),statusEl=document.getElementById('status');
+function empty(){return Array.from({length:ROWS},()=>Array(COLS).fill(0))}
+function cloneShape(s){return s.map(r=>r.slice())}
+function spawn(){const shape=cloneShape(SHAPES[Math.floor(Math.random()*SHAPES.length)]);piece={shape,x:Math.floor((COLS-shape[0].length)/2),y:0};if(collides(piece.x,piece.y,piece.shape)){over=true;clearInterval(timer);statusEl.textContent='GAME OVER · Tippe auf NEUSTART';statusEl.classList.add('gameover')}}
+function collides(x,y,shape){for(let r=0;r<shape.length;r++)for(let c=0;c<shape[r].length;c++)if(shape[r][c]){const gx=x+c,gy=y+r;if(gx<0||gx>=COLS||gy>=ROWS||gy>=0&&grid[gy][gx])return true}return false}
+function merge(){piece.shape.forEach((row,r)=>row.forEach((v,c)=>{if(v&&piece.y+r>=0)grid[piece.y+r][piece.x+c]=1}));clearRows();spawn()}
+function clearRows(){let n=0;for(let r=ROWS-1;r>=0;r--){if(grid[r].every(Boolean)){grid.splice(r,1);grid.unshift(Array(COLS).fill(0));n++;r++}}if(n){lines+=n;score+=[0,100,300,500,800][n]*level;level=1+Math.floor(lines/8);restartTimer()}}
+function rotate(){if(over)return;const s=piece.shape[0].map((_,i)=>piece.shape.map(row=>row[i]).reverse());for(const dx of [0,-1,1,-2,2])if(!collides(piece.x+dx,piece.y,s)){piece.x+=dx;piece.shape=s;render();return}}
+function move(dx,dy){if(over)return false;if(!collides(piece.x+dx,piece.y+dy,piece.shape)){piece.x+=dx;piece.y+=dy;render();return true}if(dy>0){merge();render()}return false}
+function hardDrop(){if(over)return;let d=0;while(!collides(piece.x,piece.y+1,piece.shape)){piece.y++;d++}score+=d*2;merge();render()}
+function tick(){if(!over)move(0,1)}
+function restartTimer(){clearInterval(timer);timer=setInterval(tick,Math.max(160,650-(level-1)*55))}
+function render(){const cells=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){let active=false;if(piece&&!over){const pr=r-piece.y,pc=c-piece.x;active=pr>=0&&pc>=0&&pr<piece.shape.length&&pc<piece.shape[pr].length&&piece.shape[pr][pc]}cells.push(`<div class="cell ${grid[r][c]?'filled':''} ${active?'active':''}"></div>`)}board.innerHTML=cells.join('');scoreEl.textContent=score;linesEl.textContent=lines;levelEl.textContent=level}
+function reset(){grid=empty();score=0;lines=0;level=1;over=false;statusEl.classList.remove('gameover');statusEl.textContent='✅ Web-Runtime läuft. Damit können wir Gameplay und Bedienung auf dem iPhone testen, ohne einen iOS-Build zu verbrauchen.';spawn();restartTimer();render()}
+[['left',()=>move(-1,0)],['right',()=>move(1,0)],['down',()=>{if(move(0,1))score++}],['rotate',rotate],['drop',hardDrop],['restart',reset]].forEach(([id,fn])=>{const b=document.getElementById(id);b.addEventListener('click',()=>{fn();b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse')})});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')move(-1,0);if(e.key==='ArrowRight')move(1,0);if(e.key==='ArrowDown')move(0,1);if(e.key==='ArrowUp')rotate();if(e.key===' ')hardDrop()});
+reset();
+</script>
+</body>
+</html>
