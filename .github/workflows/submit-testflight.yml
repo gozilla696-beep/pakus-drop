@@ -1,14 +1,15 @@
-name: Inspect Pakus Drop TestFlight Submission
+name: Submit Pakus Drop to TestFlight
 
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/submit-testflight.yml'
+      - 'eas.json'
   workflow_dispatch:
 
 jobs:
-  inspect:
+  submit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,5 +29,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Show failed iOS submission details
-        run: eas submit:view ff870732-6147-42c2-952d-7387880eea6a --json
+      - name: Submit latest iOS build to App Store Connect
+        run: eas submit --platform ios --latest --profile production --non-interactive
+
+# Trigger TestFlight submit for fresh build 12.
