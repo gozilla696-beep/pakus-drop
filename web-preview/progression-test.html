@@ -10,64 +10,28 @@
 </style>
 </head>
 <body>
-<iframe id="camp" src="./camp-edition.html?v=controls-20260909-2"></iframe>
+<iframe id="camp" src="./camp-edition.html?v=stable-unlocked-1"></iframe>
 <div class="unlock" id="unlock"></div>
 <script>
-const frame=document.getElementById('camp'),unlock=document.getElementById('unlock');let lastMilestone=1;
+const frame=document.getElementById('camp'),unlock=document.getElementById('unlock');
 function campDoc(){try{return frame.contentDocument}catch{return null}}
 function gameFrame(){try{return campDoc()?.getElementById('game')}catch{return null}}
 function gameDoc(){try{return gameFrame()?.contentDocument}catch{return null}}
 function gameWin(){try{return gameFrame()?.contentWindow}catch{return null}}
-function showUnlock(text){unlock.textContent=text;unlock.classList.remove('show');void unlock.offsetWidth;unlock.classList.add('show')}
-function setVisible(id,visible){const e=gameDoc()?.getElementById(id);if(e)e.style.display=visible?'':'none'}
-function milestoneFor(level){if(level>=100)return 100;if(level>=75)return 75;if(level>=50)return 50;if(level>=40)return 40;if(level>=35)return 35;if(level>=30)return 30;if(level>=25)return 25;if(level>=20)return 20;if(level>=15)return 15;if(level>=10)return 10;if(level>=5)return 5;return 1}
 function installControlsFix(){const gd=gameDoc(),gw=gameWin();if(!gd||!gw)return false;
   if(!gd.getElementById('pakusControlsFix')){const s=gd.createElement('style');s.id='pakusControlsFix';s.textContent=`.controls{gap:6px!important;margin-top:5px!important;max-height:none!important}.btn{min-height:48px!important;padding:8px 4px!important;border-radius:13px!important;font-size:25px!important;line-height:1!important;font-weight:950!important;touch-action:none!important}.wide{min-height:42px!important;font-size:13px!important}.btn:active{transform:scale(.95)!important;filter:brightness(1.35)!important}.boardWrap{margin-bottom:0!important}@media(max-height:760px){.btn{min-height:43px!important;font-size:23px!important}.wide{min-height:38px!important;font-size:12px!important}}`;gd.head.appendChild(s)}
-  try{gw.eval(`
-    if(!window.__pakusEdgeFix){
-      window.__pakusEdgeFix=true;
-      window.__trimShape=function(s){
-        let a=s.map(r=>r.slice());
-        while(a.length&&a[0].every(v=>!v))a.shift();
-        while(a.length&&a[a.length-1].every(v=>!v))a.pop();
-        while(a[0]&&a.every(r=>!r[0]))a.forEach(r=>r.shift());
-        while(a[0]&&a.every(r=>!r[r.length-1]))a.forEach(r=>r.pop());
-        return a;
-      };
-      rotate=function(){
-        if(over)return;
-        let s=piece.shape[0].map((_,i)=>piece.shape.map(r=>r[i]).reverse());
-        s=window.__trimShape(s);
-        for(const dx of[0,-1,1,-2,2,-3,3])if(!collides(piece.x+dx,piece.y,s)){piece.x+=dx;piece.shape=s;collect();render();return}
-      };
-      const bindHold=(id,fn)=>{
-        const el=document.getElementById(id);if(!el||el.dataset.hold==='1')return;el.dataset.hold='1';
-        let t=null,i=null,started=false;
-        const stop=()=>{clearTimeout(t);clearInterval(i);t=i=null};
-        el.addEventListener('pointerdown',e=>{e.preventDefault();started=true;fn();t=setTimeout(()=>{i=setInterval(fn,85)},220)});
-        ['pointerup','pointercancel','pointerleave'].forEach(ev=>el.addEventListener(ev,stop));
-        el.addEventListener('click',e=>{if(started){e.preventDefault();e.stopImmediatePropagation();started=false}},true);
-      };
-      bindHold('left',()=>move(-1,0));bindHold('right',()=>move(1,0));bindHold('down',()=>move(0,1));
-      let sx=0,sy=0;
-      const b=document.getElementById('board');
-      b.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});
-      b.addEventListener('pointerup',e=>{const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){const steps=Math.min(5,Math.max(1,Math.round(Math.abs(dx)/42)));for(let n=0;n<steps;n++)move(dx>0?1:-1,0)}else if(dy>45&&Math.abs(dy)>Math.abs(dx))hardDrop()});
-    }
-  `)}catch{}
+  try{gw.eval(`if(!window.__pakusEdgeFix){window.__pakusEdgeFix=true;window.__trimShape=function(s){let a=s.map(r=>r.slice());while(a.length&&a[0].every(v=>!v))a.shift();while(a.length&&a[a.length-1].every(v=>!v))a.pop();while(a[0]&&a.every(r=>!r[0]))a.forEach(r=>r.shift());while(a[0]&&a.every(r=>!r[r.length-1]))a.forEach(r=>r.pop());return a;};rotate=function(){if(over)return;let s=piece.shape[0].map((_,i)=>piece.shape.map(r=>r[i]).reverse());s=window.__trimShape(s);for(const dx of[0,-1,1,-2,2,-3,3])if(!collides(piece.x+dx,piece.y,s)){piece.x+=dx;piece.shape=s;collect();render();return}};const bindHold=(id,fn)=>{const el=document.getElementById(id);if(!el||el.dataset.hold==='1')return;el.dataset.hold='1';let t=null,i=null,started=false;const stop=()=>{clearTimeout(t);clearInterval(i);t=i=null};el.addEventListener('pointerdown',e=>{e.preventDefault();started=true;fn();t=setTimeout(()=>{i=setInterval(fn,85)},220)});['pointerup','pointercancel','pointerleave'].forEach(ev=>el.addEventListener(ev,stop));el.addEventListener('click',e=>{if(started){e.preventDefault();e.stopImmediatePropagation();started=false}},true)};bindHold('left',()=>move(-1,0));bindHold('right',()=>move(1,0));bindHold('down',()=>move(0,1));let sx=0,sy=0;const b=document.getElementById('board');b.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});b.addEventListener('pointerup',e=>{const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){const steps=Math.min(5,Math.max(1,Math.round(Math.abs(dx)/42)));for(let n=0;n<steps;n++)move(dx>0?1:-1,0)}else if(dy>45&&Math.abs(dy)>Math.abs(dx))hardDrop()});}`)}catch{}
   return true;
 }
-function installOneScreenLayout(){
-  const cd=campDoc(),gd=gameDoc();if(!cd||!gd)return false;
+function installOneScreenLayout(){const cd=campDoc(),gd=gameDoc();if(!cd||!gd)return false;
   if(!cd.getElementById('pakusOneScreenCamp')){const s=cd.createElement('style');s.id='pakusOneScreenCamp';s.textContent=`html,body{width:100%;height:100dvh!important;overflow:hidden!important}#game{width:100vw!important;height:100dvh!important}.dock{top:calc(env(safe-area-inset-top) + 4px)!important;right:5px!important;bottom:auto!important;flex-direction:row!important;gap:4px!important}.dock button{padding:6px 8px!important;border-radius:11px!important;font-size:9px!important}.dock .stars{max-width:62px!important}`;cd.head.appendChild(s)}
-  if(!gd.getElementById('pakusOneScreenGame')){const s=gd.createElement('style');s.id='pakusOneScreenGame';s.textContent=`html,body{height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}body{display:block!important}.app{height:100dvh!important;max-height:100dvh!important;width:min(100vw,470px)!important;margin:0 auto!important;padding:calc(env(safe-area-inset-top) + 4px) 7px calc(env(safe-area-inset-bottom) + 4px)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}.head{flex:0 0 auto!important;margin-bottom:3px!important;min-height:25px!important}.brand{font-size:20px!important}.sub{font-size:7px!important}.topBtns{gap:3px!important}.small{padding:5px 7px!important;border-radius:8px!important;font-size:11px!important}.stats{flex:0 0 auto!important;gap:3px!important;margin-bottom:3px!important}.card{padding:3px 1px!important;border-radius:8px!important}.label{font-size:6.5px!important}.value{font-size:12px!important}.meter{flex:0 0 auto!important;height:5px!important;margin-bottom:2px!important}.difficulty{flex:0 0 auto!important;font-size:7px!important;margin:0 0 2px!important;line-height:1.1!important}.boardWrap{flex:1 1 auto!important;min-height:0!important;padding:4px!important;border-radius:13px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}.board{height:100%!important;width:auto!important;max-width:100%!important;aspect-ratio:10/18!important;gap:1px!important;padding:2px!important;border-radius:8px!important;touch-action:none!important}.cell{border-radius:2px!important}.controls{flex:0 0 auto!important;display:grid!important;grid-template-columns:repeat(4,1fr)!important}.status{display:none!important}.inventory{display:none!important}.overlay{height:100dvh!important;overflow:hidden!important}.panel{max-height:92dvh!important}.arena{height:min(390px,58dvh)!important}@media(max-height:750px){.brand{font-size:18px!important}.head{min-height:22px!important}.stats{margin-bottom:2px!important}.difficulty{display:none!important}.boardWrap{padding:3px!important}}`;gd.head.appendChild(s)}
+  if(!gd.getElementById('pakusOneScreenGame')){const s=gd.createElement('style');s.id='pakusOneScreenGame';s.textContent=`html,body{height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}body{display:block!important}.app{height:100dvh!important;max-height:100dvh!important;width:min(100vw,470px)!important;margin:0 auto!important;padding:calc(env(safe-area-inset-top) + 4px) 7px calc(env(safe-area-inset-bottom) + 4px)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}.head{flex:0 0 auto!important;margin-bottom:3px!important;min-height:25px!important}.brand{font-size:20px!important}.sub{font-size:7px!important}.topBtns{gap:3px!important}.small{padding:5px 7px!important;border-radius:8px!important;font-size:11px!important}.stats{flex:0 0 auto!important;gap:3px!important;margin-bottom:3px!important}.card{padding:3px 1px!important;border-radius:8px!important}.label{font-size:6.5px!important}.value{font-size:12px!important}.meter{flex:0 0 auto!important;height:5px!important;margin-bottom:2px!important}.difficulty{display:none!important}.boardWrap{flex:1 1 auto!important;min-height:0!important;padding:4px!important;border-radius:13px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}.board{height:100%!important;width:auto!important;max-width:100%!important;aspect-ratio:10/18!important;gap:1px!important;padding:2px!important;border-radius:8px!important;touch-action:none!important}.cell{border-radius:2px!important}.controls{flex:0 0 auto!important;display:grid!important;grid-template-columns:repeat(4,1fr)!important}.status{display:none!important}.inventory{display:none!important}.overlay{height:100dvh!important;overflow:hidden!important}.panel{max-height:92dvh!important}.arena{height:min(390px,58dvh)!important}`;gd.head.appendChild(s)}
   installControlsFix();return true;
 }
-function applyProgression(){const d=gameDoc();if(!d)return;installOneScreenLayout();const level=Number(d.getElementById('level')?.textContent||1);
-setVisible('shoot',level>=10);setVisible('placeTower',level>=15);setVisible('typeRapid',level>=15);setVisible('typeLaser',level>=20);setVisible('typeBomb',level>=30);setVisible('upgrade',level>=20);setVisible('tdMode',level>=20);setVisible('bonusGame',level>=25);setVisible('overdrive',level>=35);setVisible('blast',level>=40);
-const bonus=d.getElementById('bonusGame');if(bonus)bonus.textContent=level>=100?'👹 PAKUS MONSTER':'🎈 BONUS-SPIEL';
-const m=milestoneFor(level);if(m>lastMilestone){lastMilestone=m;const texts={5:'🧱 Spezialblöcke werden jetzt häufiger',10:'🔫 Waffen-Bonus freigeschaltet',15:'🗼 Türme freigeschaltet',20:'👾 Tower Defense freigeschaltet',25:'🎈 Bogen-Bonusspiel freigeschaltet',30:'💣 Bomben-Tower freigeschaltet',35:'🔥 Overdrive freigeschaltet',40:'💥 Pulse freigeschaltet',50:'⚠️ Elite-Spezialblöcke aktiv',75:'☄️ Chaos-Stufe erreicht',100:'👹 PAKUS MONSTER freigeschaltet'};if(texts[m])showUnlock(texts[m])}}
-setInterval(applyProgression,300);frame.addEventListener('load',()=>setTimeout(()=>{installOneScreenLayout();applyProgression()},700));window.addEventListener('resize',()=>setTimeout(installOneScreenLayout,100));
+function unlockAllStable(){const d=gameDoc();if(!d)return false;['shoot','placeTower','typeRapid','typeLaser','typeBomb','upgrade','tdMode','bonusGame','overdrive','blast'].forEach(id=>{const e=d.getElementById(id);if(e)e.style.display=''});const bonus=d.getElementById('bonusGame');if(bonus)bonus.textContent='🎈 BONUS-SPIEL';return true}
+function initStable(){if(!installOneScreenLayout())return false;unlockAllStable();return true}
+const boot=setInterval(()=>{if(initStable())clearInterval(boot)},120);
+frame.addEventListener('load',()=>setTimeout(initStable,500));
 </script>
 </body>
 </html>
