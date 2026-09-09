@@ -8,7 +8,7 @@
 <style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#05050d}#app{position:fixed;inset:0;width:100vw;height:100dvh;border:0;background:#05050d}</style>
 </head>
 <body>
-<iframe id="app" src="./progression-test.html?v=all-unlocked-1"></iframe>
+<iframe id="app" src="./progression-test.html?v=all-unlocked-stable-2"></iframe>
 <script>
 const app=document.getElementById('app');
 let runToken='',handled=new Set();
@@ -22,11 +22,13 @@ function gameWin(){try{return gameFrame()?.contentWindow}catch{return null}}
 function forceLayout(){
   const d=gameDoc(); if(!d)return false;
   const wrap=d.querySelector('.boardWrap'); const board=d.querySelector('.board');
-  if(wrap){wrap.style.setProperty('background','#ffffff','important');wrap.style.setProperty('border','2px solid #ffffff','important');wrap.style.setProperty('box-shadow','0 0 0 1px rgba(255,255,255,.35),0 8px 24px rgba(0,0,0,.6)','important');wrap.style.setProperty('padding','7px','important')}
+  if(wrap){wrap.style.setProperty('background','#ffffff','important');wrap.style.setProperty('border','2px solid #ffffff','important');wrap.style.setProperty('box-shadow','0 0 0 1px rgba(255,255,255,.35),0 8px 24px rgba(0,0,0,.6)','important');wrap.style.setProperty('padding','7px','important');wrap.classList.remove('shake');wrap.style.setProperty('transform','none','important')}
   if(board){board.style.setProperty('background','#05050d','important');board.style.setProperty('border','1px solid rgba(255,255,255,.45)','important')}
+  if(!d.getElementById('pakusNoShake')){const s=d.createElement('style');s.id='pakusNoShake';s.textContent='.shake{animation:none!important;transform:none!important}.boardWrap.shake{animation:none!important;transform:none!important}';d.head.appendChild(s)}
   const controls=d.querySelector('.controls');if(controls){controls.style.setProperty('gap','7px','important');controls.style.setProperty('margin-top','6px','important');controls.style.setProperty('overflow','visible','important');controls.style.setProperty('max-height','none','important')}
   [['left','#183d52','#3f9bc1'],['right','#183d52','#3f9bc1'],['rotate','#33234f','#8060b6'],['down','#40301a','#b78b3d']].forEach(([id,bg,bd])=>{const e=d.getElementById(id);if(e){e.style.setProperty('min-height','58px','important');e.style.setProperty('font-size','32px','important');e.style.setProperty('background',bg,'important');e.style.setProperty('border-color',bd,'important')}});
   ['drop','restart'].forEach(id=>{const e=d.getElementById(id);if(e)e.style.setProperty('min-height','48px','important')});
+  const w=gameWin();if(w&&!w.__pakusShakeDisabled){try{w.eval("window.__pakusShakeDisabled=true; shake=function(){};")}catch{}}
   return true;
 }
 function once(key,fn){if(handled.has(key))return;handled.add(key);try{fn()}catch{}}
@@ -36,13 +38,8 @@ function unlockEverything(){
   const level=Number(d.getElementById('level')?.textContent||1),score=Number(d.getElementById('score')?.textContent||0);
   if(!runToken)runToken=String(Date.now());
   if(level===1&&score===0&&handled.size>0){handled=new Set();runToken=String(Date.now())}
-
   ['shoot','placeTower','typeRapid','typeLaser','typeBomb','upgrade','tdMode','bonusGame','overdrive','blast'].forEach(show);
-
-  once('ALL_UNLOCKED',()=>{
-    try{w.eval("gunUntil=Date.now()+86400000; towerCredits=Math.max(towerCredits,6); energy=100; score=Math.max(score,500); render(); banner('🚀 ALLES FREIGESCHALTET');") }catch{}
-  });
-
+  once('ALL_UNLOCKED',()=>{try{w.eval("gunUntil=Date.now()+86400000; towerCredits=Math.max(towerCredits,6); energy=100; score=Math.max(score,500); render(); banner('🚀 ALLES FREIGESCHALTET');")}catch{}});
   const bonus=d.getElementById('bonusGame');if(bonus)bonus.textContent='🎈 BONUS-SPIEL';
 }
 setInterval(()=>{forceLayout();unlockEverything()},160);
