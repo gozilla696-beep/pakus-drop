@@ -10,7 +10,7 @@
 </style>
 </head>
 <body>
-<iframe id="app" src="./progression-test.html?v=mobile-controls-4"></iframe>
+<iframe id="app" src="./progression-test.html?v=mobile-controls-5"></iframe>
 <script>
 const app=document.getElementById('app');
 function progressionDoc(){try{return app.contentDocument}catch{return null}}
@@ -18,15 +18,29 @@ function campFrame(){try{return progressionDoc()?.getElementById('camp')}catch{r
 function campDoc(){try{return campFrame()?.contentDocument}catch{return null}}
 function gameFrame(){try{return campDoc()?.getElementById('game')}catch{return null}}
 function gameDoc(){try{return gameFrame()?.contentDocument}catch{return null}}
+function forceBoardColors(gd){
+  const wrap=gd.querySelector('.boardWrap'),board=gd.querySelector('.board');
+  if(wrap){
+    wrap.style.setProperty('background','#ffffff','important');
+    wrap.style.setProperty('border','2px solid #ffffff','important');
+    wrap.style.setProperty('box-shadow','0 0 0 1px rgba(255,255,255,.28),0 8px 24px rgba(0,0,0,.55)','important');
+    wrap.style.setProperty('padding','5px','important');
+    wrap.style.setProperty('border-radius','16px','important');
+  }
+  if(board){
+    board.style.setProperty('background','#05050d','important');
+    board.style.setProperty('border','1px solid rgba(255,255,255,.55)','important');
+    board.style.setProperty('border-radius','12px','important');
+  }
+}
 function install(){
   const gd=gameDoc(); if(!gd)return false;
   if(!gd.getElementById('pakusMobileFinal')){
     const s=gd.createElement('style');s.id='pakusMobileFinal';s.textContent=`
       html,body{background:#05050d!important}
       .app{background:#05050d!important}
-      .boardWrap{position:relative!important;background:#ffffff!important;border:2px solid #ffffff!important;box-shadow:0 0 0 1px #ffffff33,0 8px 24px #0008!important;padding:4px!important;border-radius:16px!important}
-      .boardWrap:before{content:"";position:absolute;inset:0;border-radius:16px;box-shadow:inset 0 0 0 2px #ffffff;pointer-events:none}
-      .board{background:#05050d!important;border:1px solid #ffffff66!important;border-radius:12px!important}
+      .boardWrap{position:relative!important;background:#fff!important;border:2px solid #fff!important;padding:5px!important;border-radius:16px!important}
+      .board{background:#05050d!important;border:1px solid #ffffff88!important;border-radius:12px!important}
       .controls{gap:7px!important;margin-top:6px!important;max-height:none!important;overflow:visible!important}
       .btn{min-height:54px!important;padding:9px 5px!important;border-radius:15px!important;font-size:29px!important;font-weight:950!important;line-height:1!important;border:1px solid #4a4e86!important;background:linear-gradient(#24264b,#111326)!important;box-shadow:inset 0 1px 0 #ffffff18,0 4px 10px #0006!important}
       .wide{min-height:48px!important;font-size:14px!important}
@@ -41,9 +55,10 @@ function install(){
       @media(max-height:760px){.btn{min-height:49px!important;font-size:26px!important}.wide{min-height:43px!important;font-size:13px!important}#left,#right,#down,#rotate{min-height:52px!important;font-size:29px!important}}
     `;gd.head.appendChild(s);
   }
+  forceBoardColors(gd);
   return true;
 }
-setInterval(install,250);app.addEventListener('load',()=>setTimeout(install,800));window.addEventListener('resize',()=>setTimeout(install,120));
+setInterval(install,200);app.addEventListener('load',()=>setTimeout(install,700));window.addEventListener('resize',()=>setTimeout(install,100));
 </script>
 </body>
 </html>
