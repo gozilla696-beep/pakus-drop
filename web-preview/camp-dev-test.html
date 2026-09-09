@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#070714">
+<title>Pakus Drop — DEV Test</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070714;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}#camp{position:fixed;inset:0;width:100%;height:100%;border:0;background:#070714}.dev{position:fixed;left:10px;bottom:calc(env(safe-area-inset-bottom) + 12px);z-index:999;display:flex;flex-direction:column;gap:7px}.dev button{border:1px solid #ffbf42;background:linear-gradient(#5b3310,#2a1809);color:#fff;border-radius:14px;padding:10px 12px;font-size:11px;font-weight:950;box-shadow:0 8px 26px #000a}.dev .monster{border-color:#ff4bd8;background:linear-gradient(#5b164d,#291023)}.dev .stars{border-color:#77eeff;background:linear-gradient(#104852,#0b252b)}.badge{position:fixed;left:10px;top:calc(env(safe-area-inset-top) + 8px);z-index:999;background:#8b152b;border:1px solid #ff607e;border-radius:99px;padding:6px 9px;font-size:9px;font-weight:950;letter-spacing:.6px;box-shadow:0 5px 18px #0008}.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 44px);transform:translateX(-50%);z-index:1000;background:#181833;border:1px solid #6666a5;border-radius:99px;padding:9px 14px;font-size:11px;font-weight:900;opacity:0;transition:.18s;pointer-events:none}.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<iframe id="camp" src="./camp-edition.html"></iframe>
+<div class="badge">🧪 DEV TEST</div>
+<div class="dev">
+<button id="lvl100">⚡ TEST: LEVEL 100</button>
+<button class="monster" id="monster">👹 MONSTER SOFORT</button>
+<button class="stars" id="stars">⭐ +500 TEST-STERNE</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const frame=document.getElementById('camp'),toast=document.getElementById('toast');
+function msg(t){toast.textContent=t;toast.classList.add('show');clearTimeout(msg.t);msg.t=setTimeout(()=>toast.classList.remove('show'),1700)}
+function app(){try{return frame.contentWindow}catch{return null}}
+function gameDoc(){try{return app()?.document.getElementById('game')?.contentDocument}catch{return null}}
+function setLevel100(){const d=gameDoc();if(!d){msg('Spiel lädt noch …');return false}const el=d.getElementById('level');if(!el){msg('Level-Anzeige noch nicht bereit');return false}el.textContent='100';try{const w=app();w.hookBonus?.(100)}catch{}msg('⚡ Level-Anzeige auf 100 gesetzt');return true}
+function startMonster(){const w=app();if(!w){msg('Camp lädt noch …');return}try{setLevel100();w.startMonster?.(100);msg('👹 Pakus Monster Level 100 gestartet')}catch(e){msg('Monster-Test noch nicht bereit')}}
+function addStars(){const w=app();if(!w){msg('Camp lädt noch …');return}try{w.camp.stars=(Number(w.camp.stars)||0)+500;w.saveCamp?.();w.renderDock?.();w.renderCamp?.();msg('⭐ +500 Test-Sterne')}catch(e){msg('Sterne-Test noch nicht bereit')}}
+document.getElementById('lvl100').onclick=setLevel100;document.getElementById('monster').onclick=startMonster;document.getElementById('stars').onclick=addStars;
+frame.addEventListener('load',()=>setTimeout(()=>msg('🧪 DEV-Modus bereit'),500));
+</script>
+</body>
+</html>
