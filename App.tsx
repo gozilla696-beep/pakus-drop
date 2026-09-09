@@ -448,7 +448,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar style="light" />
-      <ScrollView contentContainerStyle={styles.page} scrollEnabled={shopOpen}>
+      <ScrollView contentContainerStyle={styles.page} scrollEnabled>
         <View style={styles.hero}>
           <Pressable onPress={() => { setPaused(true); setScreen('home'); }}><Text style={styles.back}>‹ MENÜ</Text></Pressable>
           <Text style={styles.kicker}>PAKUS DROP</Text>
