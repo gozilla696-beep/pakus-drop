@@ -6,11 +6,16 @@ on:
     branches: [main]
     paths:
       - 'App.tsx'
+      - 'index.ts'
       - 'package.json'
       - 'scripts/**'
       - 'app.json'
       - 'eas.json'
       - '.github/workflows/ios-build.yml'
+
+concurrency:
+  group: pakus-drop-ios-release
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -34,5 +39,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build iOS
-        run: eas build --platform ios --profile production --non-interactive --no-wait
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build and auto-submit iOS
+        run: eas build --platform ios --profile production --auto-submit --non-interactive --no-wait
