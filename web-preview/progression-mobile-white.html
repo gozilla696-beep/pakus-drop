@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#05050d">
+<title>Pakus Drop — White Gutters</title>
+<style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#05050d}#app{position:fixed;inset:0;width:100vw;height:100dvh;border:0;background:#05050d}</style>
+</head>
+<body>
+<iframe id="app" src="./progression-test.html?v=white-gutters-1"></iframe>
+<script>
+const app=document.getElementById('app');
+function progressionDoc(){try{return app.contentDocument}catch{return null}}
+function campFrame(){try{return progressionDoc()?.getElementById('camp')}catch{return null}}
+function campDoc(){try{return campFrame()?.contentDocument}catch{return null}}
+function gameFrame(){try{return campDoc()?.getElementById('game')}catch{return null}}
+function gameDoc(){try{return gameFrame()?.contentDocument}catch{return null}}
+function forceLayout(){
+  const d=gameDoc(); if(!d)return false;
+  const wrap=d.querySelector('.boardWrap');
+  const board=d.querySelector('.board');
+  if(wrap){
+    wrap.style.setProperty('background','#ffffff','important');
+    wrap.style.setProperty('border','2px solid #ffffff','important');
+    wrap.style.setProperty('box-shadow','0 0 0 1px rgba(255,255,255,.35),0 8px 24px rgba(0,0,0,.6)','important');
+    wrap.style.setProperty('padding','7px','important');
+  }
+  if(board){
+    board.style.setProperty('background','#05050d','important');
+    board.style.setProperty('border','1px solid rgba(255,255,255,.45)','important');
+  }
+  const controls=d.querySelector('.controls');
+  if(controls){controls.style.setProperty('gap','7px','important');controls.style.setProperty('margin-top','6px','important');}
+  [['left','#183d52','#3f9bc1'],['right','#183d52','#3f9bc1'],['rotate','#33234f','#8060b6'],['down','#40301a','#b78b3d']].forEach(([id,bg,bd])=>{const e=d.getElementById(id);if(e){e.style.setProperty('min-height','58px','important');e.style.setProperty('font-size','32px','important');e.style.setProperty('background',bg,'important');e.style.setProperty('border-color',bd,'important');}});
+  ['drop','restart'].forEach(id=>{const e=d.getElementById(id);if(e)e.style.setProperty('min-height','48px','important')});
+  return true;
+}
+setInterval(forceLayout,120);
+app.addEventListener('load',()=>setTimeout(forceLayout,600));
+window.addEventListener('resize',()=>setTimeout(forceLayout,100));
+</script>
+</body>
+</html>
