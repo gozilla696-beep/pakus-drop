@@ -42,5 +42,28 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Build and auto-submit iOS
+      - name: Assign guaranteed fresh iOS build number
+        env:
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const run = Number(process.env.RUN_NUMBER);
+          if (!Number.isInteger(run) || run < 1) throw new Error('Invalid GitHub run number');
+          // Keep every automated Apple build safely above the old manually-used 1–99 range.
+          const buildNumber = String(100 + run);
+
+          const app = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+          app.expo.ios.buildNumber = buildNumber;
+          fs.writeFileSync('app.json', JSON.stringify(app, null, 2) + '\n');
+
+          const eas = JSON.parse(fs.readFileSync('eas.json', 'utf8'));
+          eas.cli = { ...(eas.cli || {}), appVersionSource: 'local' };
+          eas.build.production = { ...(eas.build.production || {}), autoIncrement: false };
+          fs.writeFileSync('eas.json', JSON.stringify(eas, null, 2) + '\n');
+
+          console.log(`Using guaranteed fresh iOS build number ${buildNumber}`);
+          NODE
+
+      - name: Build and auto-submit exact iOS build
         run: eas build --platform ios --profile production --auto-submit --non-interactive --no-wait
