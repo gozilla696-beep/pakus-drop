@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#05050d">
+<title>Pakus Drop — Mobile</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#05050d}#app{position:fixed;inset:0;width:100vw;height:100dvh;border:0;background:#05050d}
+</style>
+</head>
+<body>
+<iframe id="app" src="./progression-test.html?v=mobile-controls-3"></iframe>
+<script>
+const app=document.getElementById('app');
+function progressionDoc(){try{return app.contentDocument}catch{return null}}
+function campFrame(){try{return progressionDoc()?.getElementById('camp')}catch{return null}}
+function campDoc(){try{return campFrame()?.contentDocument}catch{return null}}
+function gameFrame(){try{return campDoc()?.getElementById('game')}catch{return null}}
+function gameDoc(){try{return gameFrame()?.contentDocument}catch{return null}}
+function install(){
+  const gd=gameDoc(); if(!gd)return false;
+  if(!gd.getElementById('pakusMobileFinal')){
+    const s=gd.createElement('style');s.id='pakusMobileFinal';s.textContent=`
+      html,body{background:#05050d!important}
+      .app{background:#05050d!important}
+      .boardWrap{background:#090916!important;border:2px solid #25284d!important;box-shadow:inset 0 0 0 1px #11142c,0 10px 28px #0008!important;padding:5px!important}
+      .board{background:#03030a!important;border:1px solid #171a33!important}
+      .controls{gap:7px!important;margin-top:6px!important;max-height:none!important;overflow:visible!important}
+      .btn{min-height:54px!important;padding:9px 5px!important;border-radius:15px!important;font-size:29px!important;font-weight:950!important;line-height:1!important;border:1px solid #4a4e86!important;background:linear-gradient(#24264b,#111326)!important;box-shadow:inset 0 1px 0 #ffffff18,0 4px 10px #0006!important}
+      .wide{min-height:48px!important;font-size:14px!important}
+      #left,#right,#down,#rotate{min-height:58px!important;font-size:32px!important}
+      #left{background:linear-gradient(#183d52,#0b202c)!important;border-color:#3f9bc1!important}
+      #right{background:linear-gradient(#183d52,#0b202c)!important;border-color:#3f9bc1!important}
+      #down{background:linear-gradient(#40301a,#21180b)!important;border-color:#b78b3d!important}
+      #rotate{background:linear-gradient(#33234f,#1b122c)!important;border-color:#8060b6!important}
+      #drop{background:linear-gradient(#4b3410,#251a08)!important;border-color:#c79b39!important}
+      #restart{background:linear-gradient(#402033,#21101a)!important;border-color:#a75072!important}
+      .btn:active{transform:scale(.94)!important;filter:brightness(1.45)!important}
+      @media(max-height:760px){.btn{min-height:49px!important;font-size:26px!important}.wide{min-height:43px!important;font-size:13px!important}#left,#right,#down,#rotate{min-height:52px!important;font-size:29px!important}}
+    `;gd.head.appendChild(s);
+  }
+  return true;
+}
+setInterval(install,250);app.addEventListener('load',()=>setTimeout(install,800));window.addEventListener('resize',()=>setTimeout(install,120));
+</script>
+</body>
+</html>
