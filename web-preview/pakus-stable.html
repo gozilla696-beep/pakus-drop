@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#05050d">
+<title>Pakus Drop Stable</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05050d;overscroll-behavior:none;touch-action:manipulation}#stage{position:fixed;left:0;top:0;width:100%;border:0;display:block;background:#05050d;transform:none!important;animation:none!important}
+</style>
+</head>
+<body>
+<iframe id="stage" src="./pakus-full-test.html?v=fixedviewport1" scrolling="no"></iframe>
+<script>
+(function(){
+  const stage=document.getElementById('stage');
+  const LOCKED_HEIGHT=Math.round(window.innerHeight);
+  const LOCKED_WIDTH=Math.round(window.innerWidth);
+  document.documentElement.style.height=LOCKED_HEIGHT+'px';
+  document.body.style.height=LOCKED_HEIGHT+'px';
+  document.body.style.width=LOCKED_WIDTH+'px';
+  stage.style.height=LOCKED_HEIGHT+'px';
+  stage.style.width=LOCKED_WIDTH+'px';
+  stage.style.maxHeight=LOCKED_HEIGHT+'px';
+  stage.style.minHeight=LOCKED_HEIGHT+'px';
+  function freezeChild(){
+    try{
+      const d=stage.contentDocument,w=stage.contentWindow;
+      if(!d||!w)return false;
+      d.documentElement.style.setProperty('height',LOCKED_HEIGHT+'px','important');
+      d.documentElement.style.setProperty('max-height',LOCKED_HEIGHT+'px','important');
+      d.documentElement.style.setProperty('overflow','hidden','important');
+      d.body.style.setProperty('height',LOCKED_HEIGHT+'px','important');
+      d.body.style.setProperty('max-height',LOCKED_HEIGHT+'px','important');
+      d.body.style.setProperty('overflow','hidden','important');
+      const game=d.getElementById('game');
+      if(game){game.style.setProperty('height',LOCKED_HEIGHT+'px','important');game.style.setProperty('max-height',LOCKED_HEIGHT+'px','important');}
+      if(!d.getElementById('pakusViewportLock')){
+        const s=d.createElement('style');s.id='pakusViewportLock';s.textContent='html,body{height:'+LOCKED_HEIGHT+'px!important;max-height:'+LOCKED_HEIGHT+'px!important;min-height:'+LOCKED_HEIGHT+'px!important;overflow:hidden!important}.ov{height:'+LOCKED_HEIGHT+'px!important;max-height:'+LOCKED_HEIGHT+'px!important}.panel{max-height:'+(LOCKED_HEIGHT-24)+'px!important}#game{height:'+LOCKED_HEIGHT+'px!important;max-height:'+LOCKED_HEIGHT+'px!important;min-height:'+LOCKED_HEIGHT+'px!important;transform:none!important}';d.head.appendChild(s);
+      }
+      return true;
+    }catch(e){return false}
+  }
+  stage.addEventListener('load',()=>{let tries=0;const t=setInterval(()=>{tries++;if(freezeChild()||tries>20)clearInterval(t)},150)});
+})();
+</script>
+</body>
+</html>
