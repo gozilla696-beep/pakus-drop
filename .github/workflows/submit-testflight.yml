@@ -1,0 +1,31 @@
+name: Submit Pakus Drop to TestFlight
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/submit-testflight.yml'
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Submit latest iOS build to App Store Connect
+        run: eas submit --platform ios --latest --profile production --non-interactive
