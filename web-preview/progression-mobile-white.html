@@ -8,14 +8,17 @@
 <style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#05050d}#app{position:fixed;inset:0;width:100vw;height:100dvh;border:0;background:#05050d}</style>
 </head>
 <body>
-<iframe id="app" src="./progression-test.html?v=white-gutters-1"></iframe>
+<iframe id="app" src="./progression-test.html?v=auto-progression-1"></iframe>
 <script>
 const app=document.getElementById('app');
+let runToken='',handled=new Set();
 function progressionDoc(){try{return app.contentDocument}catch{return null}}
 function campFrame(){try{return progressionDoc()?.getElementById('camp')}catch{return null}}
 function campDoc(){try{return campFrame()?.contentDocument}catch{return null}}
+function campWin(){try{return campFrame()?.contentWindow}catch{return null}}
 function gameFrame(){try{return campDoc()?.getElementById('game')}catch{return null}}
 function gameDoc(){try{return gameFrame()?.contentDocument}catch{return null}}
+function gameWin(){try{return gameFrame()?.contentWindow}catch{return null}}
 function forceLayout(){
   const d=gameDoc(); if(!d)return false;
   const wrap=d.querySelector('.boardWrap');
@@ -36,8 +39,34 @@ function forceLayout(){
   ['drop','restart'].forEach(id=>{const e=d.getElementById(id);if(e)e.style.setProperty('min-height','48px','important')});
   return true;
 }
-setInterval(forceLayout,120);
-app.addEventListener('load',()=>setTimeout(forceLayout,600));
+function once(key,fn){if(handled.has(key))return;handled.add(key);try{fn()}catch{}}
+function freezeGame(ms){const w=gameWin();if(!w)return;try{w.eval(`freezeUntil=Math.max(freezeUntil||0,Date.now()+${ms});`)}catch{}}
+function autoProgress(){
+  const d=gameDoc(),w=gameWin(),cw=campWin();if(!d||!w)return;
+  const level=Number(d.getElementById('level')?.textContent||1);
+  const score=Number(d.getElementById('score')?.textContent||0);
+  const token=String(score===0&&level===1?Date.now():runToken||Date.now());
+  if(!runToken)runToken=token;
+  if(level===1&&score===0&&handled.size>0){handled=new Set();runToken=String(Date.now())}
+
+  if(level>=10)once('L10',()=>{w.eval("gunUntil=Math.max(gunUntil,Date.now()+12000); render(); banner('🔫 WAFFE FREI');")});
+  if(level>=15)once('L15',()=>{w.eval("towerCredits+=2; render(); banner('🗼 2 TOWER-KITS');")});
+  if(level>=20)once('L20',()=>{w.eval("towerCredits+=1; render(); tdMode();")});
+  if(level>=25)once('L25',()=>{freezeGame(22000);w.eval("openBonus();")});
+  if(level>=30)once('L30',()=>{w.eval("towerCredits+=2; towerType='bomb'; render(); banner('💣 BOMBEN-TOWER');")});
+  if(level>=35)once('L35',()=>{w.eval("energy=100; render(); banner('🔥 OVERDRIVE BEREIT');")});
+  if(level>=40)once('L40',()=>{w.eval("score+=250; render(); banner('💥 PULSE BEREIT');")});
+  if(level>=50)once('L50',()=>{freezeGame(22000);w.eval("openBonus();")});
+  if(level>=60)once('L60',()=>{w.eval("tdMode();")});
+  if(level>=75)once('L75',()=>{freezeGame(22000);w.eval("openBonus();")});
+  if(level>=80)once('L80',()=>{w.eval("tdMode();")});
+  if(level>=100)once('L100',()=>{freezeGame(30000);if(cw&&typeof cw.startMonster==='function')cw.startMonster(level)});
+
+  if(level>=20&&level%10===0)once('TD'+level,()=>w.eval("tdMode();"));
+  if(level>100&&level%25===0)once('MON'+level,()=>{freezeGame(30000);if(cw&&typeof cw.startMonster==='function')cw.startMonster(level)});
+}
+setInterval(()=>{forceLayout();autoProgress()},160);
+app.addEventListener('load',()=>setTimeout(()=>{forceLayout();autoProgress()},700));
 window.addEventListener('resize',()=>setTimeout(forceLayout,100));
 </script>
 </body>
