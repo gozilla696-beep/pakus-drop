@@ -1,10 +1,6 @@
 name: Submit Pakus Drop to TestFlight
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/submit-testflight.yml'
   workflow_dispatch:
 
 jobs:
@@ -35,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 80); do
-            STATUS=$(eas build:view "$BUILD_ID" --json --non-interactive | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log(j.status||'UNKNOWN')})")
+            STATUS=$(eas build:view "$BUILD_ID" --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log(j.status||'UNKNOWN')})")
             echo "EAS build status: $STATUS"
             if [ "$STATUS" = "FINISHED" ]; then
               break
@@ -47,7 +43,7 @@ jobs:
             sleep 30
           done
 
-          STATUS=$(eas build:view "$BUILD_ID" --json --non-interactive | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log(j.status||'UNKNOWN')})")
+          STATUS=$(eas build:view "$BUILD_ID" --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log(j.status||'UNKNOWN')})")
           if [ "$STATUS" != "FINISHED" ]; then
             echo "Timed out waiting for EAS build to finish."
             exit 1
